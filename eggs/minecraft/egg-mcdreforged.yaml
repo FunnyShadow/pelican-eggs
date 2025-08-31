@@ -44,7 +44,7 @@ scripts:
 
       echo "正在创建用户说明文件 (readme.txt)..."
       cat <<'EOF' > readme.txt
-      欢迎使用 BlueFunny 的服务器面板! 
+      欢迎使用 BlueFunny 的服务器面板!
 
       # 注意
       为了保证服务器的正常运行, 我们已禁止您修改位于服务器根目录的 'config.yml' 文件
@@ -59,8 +59,8 @@ scripts:
       # 故障排查
       1.  检查 "Startup" 页面上的环境变量: 确保所有设置, 特别是 `SERVER_JARFILE` 和 `MCDR_HANDLER` 是正确的
       2.  检查 `server/` 目录: 确保您的服务端文件已完整上传
-      3.  [(Neo)Forge 用户] 检查 'forge_versions.txt': 确保版本号填写无误
-      4.  查看控制台日志: 启动时发生的任何错误都会在此显示
+      3.  查看控制台日志: 启动时发生的任何错误都会在此显示
+      4.  [(Neo)Forge 用户] 检查 'forge_versions.txt': 确保版本号填写无误
 
       如果问题无法解决, 请尝试使用 "Settings" -> "Reinstall Server" 功能来重装服务器 (数据会被备份到当前文件夹下的 'old' 目录中)
       EOF
