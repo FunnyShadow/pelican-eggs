@@ -165,15 +165,35 @@ variables:
       - required
       - string
       - "in:zh_cn,zh_tw,en_us"
-  - sort: 11
-    name: "[高级] PIP 参数"
-    description: "为 MCDR 插件安装 Python 依赖时指定一些额外的参数, 例如替换镜像源"
-    env_variable: PIP_ARGS
-    default_value: " -i https://pypi.tuna.tsinghua.edu.cn/simple"
+  - sort: 5
+    name: "MCDR 日志包含服务端输出"
+    description: "是否要在 MCDReforged 的日志中包含服务端输出 / 可能会导致日志文件异常增长"
+    env_variable: MCDR_LOG_SERVER_OUTPUT
+    default_value: false
     user_viewable: true
     user_editable: true
     rules:
-      - nullable
+      - required
+      - "in:true,false"
+  - sort: 6
+    name: "[高级] MCDR 控制台编码"
+    description: "设置 MCDReforged 向控制台发送信息时所使用的编码"
+    env_variable: MCDR_ENCODING
+    default_value: utf8
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+  - sort: 7
+    name: "[高级] MCDR 控制台解码编码"
+    description: "设置 MCDReforged 从控制台接受信息时所使用的编码"
+    env_variable: MCDR_DECODING
+    default_value: utf8
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
       - string
   - sort: 8
     name: "[高级] MCDR RCON 功能"
@@ -211,33 +231,13 @@ variables:
       - nullable
       - string
       - "min:8"
-  - sort: 6
-    name: "[高级] MCDR 控制台编码"
-    description: "设置 MCDReforged 向控制台发送信息时所使用的编码"
-    env_variable: MCDR_ENCODING
-    default_value: utf8
+  - sort: 11
+    name: "[高级] PIP 参数"
+    description: "为 MCDR 插件安装 Python 依赖时指定一些额外的参数, 例如替换镜像源"
+    env_variable: PIP_ARGS
+    default_value: " -i https://pypi.tuna.tsinghua.edu.cn/simple"
     user_viewable: true
     user_editable: true
     rules:
-      - required
+      - nullable
       - string
-  - sort: 7
-    name: "[高级] MCDR 控制台解码编码"
-    description: "设置 MCDReforged 从控制台接受信息时所使用的编码"
-    env_variable: MCDR_DECODING
-    default_value: utf8
-    user_viewable: true
-    user_editable: true
-    rules:
-      - required
-      - string
-  - sort: 5
-    name: "MCDR 日志包含服务端输出"
-    description: "是否要在 MCDReforged 的日志中包含服务端输出 / 可能会导致日志文件异常增长"
-    env_variable: MCDR_LOG_SERVER_OUTPUT
-    default_value: false
-    user_viewable: true
-    user_editable: true
-    rules:
-      - required
-      - "in:true,false"
