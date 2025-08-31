@@ -22,7 +22,7 @@ config:
   startup:
     done: "Done ("
   logs: "{}"
-  stop: stop
+  stop: exit
 scripts:
   installation:
     script: |-
