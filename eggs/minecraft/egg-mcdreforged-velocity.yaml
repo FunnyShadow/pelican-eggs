@@ -18,7 +18,7 @@ file_denylist:
   - .mcdr_installed
 startup: "python3 -m mcdreforged"
 config:
-  files: '{"files":{"velocity.toml":{"parser":"file","find":{"bind = ":"bind = \"0.0.0.0:{{server.build.default.port}}\""}}}}'
+  files: "{}"
   startup:
     done: "Done ("
   logs: "{}"

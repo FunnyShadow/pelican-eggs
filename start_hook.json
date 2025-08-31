@@ -1,0 +1,56 @@
+{
+  "install": {
+    "files": {
+      "config.yml": {
+        "parser": "yaml",
+        "find": {
+          "check_update": false,
+          "advanced_console": false
+        }
+      }
+    }
+  },
+  "pre_start": {
+    "files": {
+      "config.yml": {
+        "parser": "yaml",
+        "find": {
+          "working_directory": "server",
+          "language": "{{MCDR_LANGUAGE}}",
+          "write_server_output_to_log_file": "{{MCDR_LOG_SERVER_OUTPUT}}",
+          "encoding": "{{MCDR_ENCODING}}",
+          "decoding": "{{MCDR_DECODING}}",
+          "plugin_pip_install_extra_args": "{{PIP_ARGS}}",
+          "rcon.enable": "{{MCDR_RCON_ENABLED}}",
+          "rcon.port": "{{MCDR_RCON_PORT}}",
+          "rcon.password": "{{MCDR_RCON_PASSWORD}}",
+          "start_command": "{{MCDR_START_COMMAND}}"
+        }
+      },
+      "server/config.yml": {
+        "parser": "yaml",
+        "find": {
+          "listeners[0].host": "0.0.0.0:{{server.build.default.port}}",
+          "servers.*.address": {
+            "127.0.0.1": "{{config.docker.interface}}",
+            "localhost": "{{config.docker.interface}}"
+          }
+        }
+      },
+      "server/velocity.toml": {
+        "parser": "file",
+        "find": {
+          "bind = ": "bind = \"0.0.0.0:{{server.build.default.port}}\""
+        }
+      },
+      "server/server.properties": {
+        "parser": "properties",
+        "find": {
+          "server-ip": "0.0.0.0",
+          "server-port": "{{server.build.default.port}}",
+          "query.port": "{{server.build.default.port}}"
+        }
+      }
+    }
+  }
+}
