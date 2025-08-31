@@ -1,55 +1,49 @@
 {
-  "install": {
-    "files": {
-      "config.yml": {
-        "parser": "yaml",
-        "find": {
-          "check_update": false,
-          "advanced_console": false
+  "files": {
+    "config.yml": {
+      "parser": "yaml",
+      "find": {
+        "check_update": false,
+        "advanced_console": false,
+        "working_directory": "server",
+        "language": "{{MCDR_LANGUAGE}}",
+        "write_server_output_to_log_file": "{{MCDR_LOG_SERVER_OUTPUT}}",
+        "encoding": "{{MCDR_ENCODING}}",
+        "decoding": "{{MCDR_DECODING}}",
+        "plugin_pip_install_extra_args": "{{PIP_ARGS}}",
+        "rcon.enable": "{{MCDR_RCON_ENABLED}}",
+        "rcon.port": "{{MCDR_RCON_PORT}}",
+        "rcon.password": "{{MCDR_RCON_PASSWORD}}",
+        "start_command": [
+          "{{MCDR_CMD_PART_EXEC}}",
+          "{{MCDR_CMD_PART_JVM}}",
+          "{{MCDR_CMD_PART_MAIN}}",
+          "{{MCDR_CMD_PART_ARGS}}"
+        ]
+      }
+    },
+    "server/server.properties": {
+      "parser": "properties",
+      "find": {
+        "server-ip": "{{server.build.default.ip}}",
+        "server-port": "{{server.build.default.port}}",
+        "query.port": "{{server.build.default.port}}"
+      }
+    },
+    "server/config.yml": {
+      "parser": "yaml",
+      "find": {
+        "listeners[0].host": "0.0.0.0:{{server.build.default.port}}",
+        "servers.*.address": {
+          "127.0.0.1": "{{config.docker.interface}}",
+          "localhost": "{{config.docker.interface}}"
         }
       }
-    }
-  },
-  "pre_start": {
-    "files": {
-      "config.yml": {
-        "parser": "yaml",
-        "find": {
-          "working_directory": "server",
-          "language": "{{env.MCDR_LANGUAGE}}",
-          "write_server_output_to_log_file": "{{env.MCDR_LOG_SERVER_OUTPUT}}",
-          "encoding": "{{env.MCDR_ENCODING}}",
-          "decoding": "{{env.MCDR_DECODING}}",
-          "plugin_pip_install_extra_args": "{{env.PIP_ARGS}}",
-          "rcon.enable": "{{env.MCDR_RCON_ENABLED}}",
-          "rcon.port": "{{env.MCDR_RCON_PORT}}",
-          "rcon.password": "{{env.MCDR_RCON_PASSWORD}}",
-          "start_command": "DYNAMICALLY_GENERATED_BY_START_HOOK"
-        }
-      },
-      "server/config.yml": {
-        "parser": "yaml",
-        "find": {
-          "listeners[0].host": "0.0.0.0:{{env.server.build.default.port}}",
-          "servers.*.address": {
-            "127.0.0.1": "{{env.config.docker.interface}}",
-            "localhost": "{{env.config.docker.interface}}"
-          }
-        }
-      },
-      "server/velocity.toml": {
-        "parser": "file",
-        "find": {
-          "bind = ": "bind = \"0.0.0.0:{{env.server.build.default.port}}\""
-        }
-      },
-      "server/server.properties": {
-        "parser": "properties",
-        "find": {
-          "server-ip": "0.0.0.0",
-          "server-port": "{{env.server.build.default.port}}",
-          "query.port": "{{env.server.build.default.port}}"
-        }
+    },
+    "server/velocity.toml": {
+      "parser": "file",
+      "find": {
+        "bind = ": "bind = \"0.0.0.0:{{server.build.default.port}}\""
       }
     }
   }
