@@ -5,7 +5,7 @@ meta:
 name: MCDReforged
 author: no-reply@bluefunny.email
 description: "一个简洁高效且兼容性极强的 MCDReforged 运行环境"
-tags: {}
+tags: "{}"
 features:
   - eula
 docker_images:
@@ -17,10 +17,10 @@ file_denylist:
   - config.yml
 startup: "python3 -m mcdreforged"
 config:
-  files: {}
+  files: "{}"
   startup:
     done: "Starting the server with command"
-  logs: {}
+  logs: "{}"
   stop: stop
 scripts:
   installation:
