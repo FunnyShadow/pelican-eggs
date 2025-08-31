@@ -11,10 +11,10 @@ tags: {}
 features:
   - eula
 docker_images:
-  "Java 21": "bluefunny/pelican-yolks:mcdr-runtime-21-latest"
-  "Java 17": "bluefunny/pelican-yolks:mcdr-runtime-17-latest"
-  "Java 11": "bluefunny/pelican-yolks:mcdr-runtime-11-latest"
-  "Java 8": "bluefunny/pelican-yolks:mcdr-runtime-8-latest"
+  "Java 21": "bluefunny/pelican-yolks:mcdr-21-latest"
+  "Java 17": "bluefunny/pelican-yolks:mcdr-17-latest"
+  "Java 11": "bluefunny/pelican-yolks:mcdr-11-latest"
+  "Java 8": "bluefunny/pelican-yolks:mcdr-8-latest"
 file_denylist:
   - config.yml
 startup: "python3 -m mcdreforged"
