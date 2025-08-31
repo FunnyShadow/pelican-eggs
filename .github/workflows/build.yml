@@ -1,0 +1,53 @@
+name: build and push yolks
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+
+  push:
+    branches:
+      - "main"
+    paths:
+      - "yolks/minecraft/runtime/**"
+      - ".github/workflows/build.yml"
+
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: bluefunny/pelican-yolks
+  BUILD_PATH: yolks/minecraft/runtime
+
+jobs:
+  build-and-push:
+    name: Build for JDK ${{ matrix.java }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [8, 11, 17, 21]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.BUILD_PATH }}
+          file: ${{ env.BUILD_PATH }}/Dockerfile
+          push: true
+          build-args: |
+            JAVA_VERSION=${{ matrix.java }}
+          tags: ${{ env.IMAGE_NAME }}:mcdr-${{ matrix.java }}-latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:mcdr-${{ matrix.java }}-buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:mcdr-${{ matrix.java }}-buildcache,mode=max

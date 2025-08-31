@@ -1,0 +1,266 @@
+_comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL"
+meta:
+  version: PLCN_v2
+  update_url: null
+exported_at: "2025-08-31T05:50:26+00:00"
+name: MCDReforged
+author: no-reply@bluefunny.email
+uuid: 6f320fef-0570-4011-971f-4abd0c08434c
+description: "一个简洁高效且兼容性极强的 MCDReforged 运行环境"
+tags: {}
+features:
+  - eula
+docker_images:
+  "Java 21": "bluefunny/pelican-yolks:mcdr-runtime-21-latest"
+  "Java 17": "bluefunny/pelican-yolks:mcdr-runtime-17-latest"
+  "Java 11": "bluefunny/pelican-yolks:mcdr-runtime-11-latest"
+  "Java 8": "bluefunny/pelican-yolks:mcdr-runtime-8-latest"
+file_denylist:
+  - config.yml
+startup: "python3 -m mcdreforged"
+config:
+  files: {}
+  startup:
+    done: "Starting the server with command"
+  logs: {}
+  stop: stop
+scripts:
+  installation:
+    script: |-
+      #!/bin/bash
+      # Pterodactyl MCDReforged Egg - Installation Script
+
+      cd /mnt/server || exit
+
+      echo "检查旧的服务端文件..."
+      if [ -n "$(find . -maxdepth 1 -mindepth 1 -not -name 'old')" ]; then
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          ARCHIVE_DIR="old/${TIMESTAMP}"
+          echo "发现旧文件, 正在备份至 ${ARCHIVE_DIR} ..."
+          mkdir -p "${ARCHIVE_DIR}"
+          find . -maxdepth 1 -mindepth 1 -not -name "old" -exec mv -t "${ARCHIVE_DIR}" {} +
+          echo "旧文件备份完成"
+      else
+          echo "未检测到旧文件, 跳过备份"
+      fi
+
+      echo "正在创建用户说明文件 (readme.txt)..."
+      cat <<'EOF' > readme.txt
+      欢迎使用 BlueFunny 的服务器面板! 
+
+      # 注意
+      为了保证服务器的正常运行，我们已禁止您修改位于服务器根目录的 `config.yml` 文件
+      此文件中大部分常用配置均可通过面板的 "Startup" 页面进行管理，如您需要修改一些非常用配置，请联系 BlueFunny
+
+      # 用户可编辑文件
+      - `server/`:
+        你的 Minecraft 服务端文件存放目录，请将核心文件 (如 paper.jar, forge-installer.jar) 上传至此
+
+      - `args.txt`:
+        通用的 JVM 启动参数文件，可在此添加或修改 Aikar's Flags 等高级 JVM 参数
+
+      - `forge_versions.txt`:
+        **[仅 Forge/NeoForge 需要]** 如果您使用 `forge_handler`，必须在此文件中填写正确的 Minecraft 和 Forge/NeoForge 版本号
+
+      # 自动生成文件
+      以下文件和目录会在服务器首次成功启动后由系统自动创建和管理，您通常无需关心：
+      - `config.yml`
+      - `permission.yml`
+      - `plugins/`
+      - `config/`
+      - `logs/`
+
+      # 如何配置服务器？
+      前往 "Startup" (启动) 标签页，您会找到所有可配置的选项，包括：
+      -   服务端核心文件名 (`SERVER_JARFILE`)
+      -   MCDR 处理器类型 (`MCDR_HANDLER`)
+      -   语言 (`MCDR_LANGUAGE`)
+      -   RCON 功能 (启用、端口、密码)
+      -   高级 PIP 参数
+      -   ...以及其他所有高级选项
+
+      # 故障排查
+      1.  **检查 "Startup" 变量**: 确保所有设置，特别是 `SERVER_JARFILE` 和 `MCDR_HANDLER` 是正确的
+      2.  **检查 `server/` 目录**: 确保您的服务端文件已完整上传
+      3.  **[Forge 用户] 检查 `forge_versions.txt`**: 确保版本号填写无误
+      4.  **查看控制台日志**: 启动时发生的任何错误都会在此显示
+
+      如果问题无法解决，请尝试使用 "Settings" -> "Reinstall Server" 功能重装
+      EOF
+
+      # --- 3. 创建通用 JVM 参数文件 ---
+      echo "正在创建 JVM 参数文件 (args.txt)..."
+      cat <<EOF > args.txt
+      -Duser.language=en
+      -Duser.country=US
+      -XX:+UseG1GC
+      -XX:+ParallelRefProcEnabled
+      -XX:MaxGCPauseMillis=200
+      -XX:+UnlockExperimentalVMOptions
+      -XX:+DisableExplicitGC
+      -XX:+AlwaysPreTouch
+      -XX:G1NewSizePercent=30
+      -XX:G1MaxNewSizePercent=40
+      -XX:G1HeapRegionSize=8M
+      -XX:G1ReservePercent=20
+      -XX:G1HeapWastePercent=5
+      -XX:G1MixedGCCountTarget=4
+      -XX:InitiatingHeapOccupancyPercent=15
+      -XX:G1MixedGCLiveThresholdPercent=90
+      -XX:G1RSetUpdatingPauseTimePercent=5
+      -XX:SurvivorRatio=32
+      -XX:+PerfDisableSharedMem
+      -XX:MaxTenuringThreshold=1
+      EOF
+
+      # --- 4. 如果是 Forge 模式，创建版本配置文件 ---
+      if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
+          echo "检测到 forge_handler, 正在创建 (Neo)Forge 版本文件 (forge_versions.txt)..."
+          cat <<EOF > forge_versions.txt
+      # 请在此处填写你的 Minecraft 版本和 (Neo)Forge 版本号
+      # 请不要包含 "<" 或 ">" 符号, 示例:
+      # MC_VERSION=1.20.1
+      # FORGE_VERSION=47.2.0
+
+      MC_VERSION=<你的 MC 版本>
+      FORGE_VERSION=<你的 (Neo)Forge 版本>
+      EOF
+      fi
+
+      # --- 5. 完成安装 ---
+      echo "-----------------------------------------"
+      echo "基础环境配置完成！"
+      echo ""
+      echo "下一步操作:"
+      echo "1. 将你的服务端核心文件上传到 'server' 目录"
+      echo "2. 前往 'Startup' 页面，仔细检查所有变量设置"
+      if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
+          echo "3. [重要] 你选择了 forge_handler, 请务必编辑 'forge_versions.txt' 文件！"
+      fi
+      echo "4. 点击 'Start' 按钮启动服务器，系统将在首次启动时自动完成所有初始化"
+      echo "-----------------------------------------"
+
+      exit 0
+    container: "mcdreforged/mcdreforged:latest-slim"
+    entrypoint: bash
+variables:
+  - sort: 1
+    name: 服务端核心文件名
+    description: "Minecraft 服务端核心文件名 / 这将直接关乎于您的服务器是否能够启动"
+    env_variable: SERVER_JARFILE
+    default_value: server.jar
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+  - sort: 2
+    name: "服务端可占用最大内存 (只读)"
+    description: "分配给 Minecraft 服务端的最大内存"
+    env_variable: JAVA_MEMORY
+    default_value: 1G
+    user_viewable: true
+    user_editable: false
+    rules:
+      - required
+      - string
+  - sort: 3
+    name: "MCDR 处理器类型"
+    description: "MCDReforged 解析服务端日志时采用的处理器类型"
+    env_variable: MCDR_HANDLER
+    default_value: vanilla_handler
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+      - "in:vanilla_handler,bukkit_handler,bukkit14_handler,forge_handler,cat_server_handler,arclight_handler,bungeecord_handler,waterfall_handler,velocity_handler,beta18_handler"
+  - sort: 4
+    name: "MCDR 语言"
+    description: |-
+      MCDReforged 显示信息所使用的语言 / 部分 MCDReforged
+      插件也会采用此值来决定其显示信息所使用的语言
+    env_variable: MCDR_LANGUAGE
+    default_value: zh_cn
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+      - "in:zh_cn,zh_tw,en_us"
+  - sort: 11
+    name: "[高级] PIP 参数"
+    description: "为 MCDR 插件安装 Python 依赖时指定一些额外的参数, 例如替换镜像源"
+    env_variable: PIP_ARGS
+    default_value: " -i https://pypi.tuna.tsinghua.edu.cn/simple"
+    user_viewable: true
+    user_editable: true
+    rules:
+      - nullable
+      - string
+  - sort: 8
+    name: "[高级] MCDR RCON 功能"
+    description: |-
+      是否启用 MCDReforged 的 RCON 功能 / 某些软件可能需要通过 RCON
+      与服务器进行更深度的交互
+    env_variable: MCDR_RCON_ENABLED
+    default_value: false
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - "in:true,false"
+  - sort: 9
+    name: "[高级] MCDR RCON 端口"
+    description: |-
+      MCDReforged RCON 功能使用的端口 / 请确保这个端口没有被占用, 并且在 "Network"
+      标签页中分配了该端口
+    env_variable: MCDR_RCON_PORT
+    default_value: ""
+    user_viewable: true
+    user_editable: true
+    rules:
+      - nullable
+      - numeric
+      - "between:1024,65535"
+  - sort: 10
+    name: "[高级] MCDR RCON 连接密码"
+    description: "MCDReforged RCON 功能的连接密码"
+    env_variable: MCDR_RCON_PASSWORD
+    default_value: ""
+    user_viewable: true
+    user_editable: true
+    rules:
+      - nullable
+      - string
+      - "min:8"
+  - sort: 6
+    name: "[高级] MCDR 控制台编码"
+    description: "设置 MCDReforged 向控制台发送信息时所使用的编码"
+    env_variable: MCDR_ENCODING
+    default_value: utf8
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+  - sort: 7
+    name: "[高级] MCDR 控制台解码编码"
+    description: "设置 MCDReforged 从控制台接受信息时所使用的编码"
+    env_variable: MCDR_DECODING
+    default_value: utf8
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - string
+  - sort: 5
+    name: "MCDR 日志包含服务端输出"
+    description: "是否要在 MCDReforged 的日志中包含服务端输出 / 可能会导致日志文件异常增长"
+    env_variable: MCDR_LOG_SERVER_OUTPUT
+    default_value: false
+    user_viewable: true
+    user_editable: true
+    rules:
+      - required
+      - "in:true,false"
