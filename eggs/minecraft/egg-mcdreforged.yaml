@@ -233,7 +233,7 @@ variables:
       - "min:8"
   - sort: 11
     name: "[高级] PIP 参数"
-    description: "为 MCDR 插件安装 Python 依赖时指定一些额外的参数, 例如替换镜像源"
+    description: "为 MCDReforged 插件安装 Python 依赖时指定一些额外的参数, 例如替换镜像源"
     env_variable: PIP_ARGS
     default_value: " -i https://pypi.tuna.tsinghua.edu.cn/simple"
     user_viewable: true
