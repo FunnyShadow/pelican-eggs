@@ -12,7 +12,6 @@ echo "------------------------"
 
 python3 /start_hook.py
 
-mkdir -p server
 cd server || { echo "错误: 'server' 目录创建或进入失败, 无法继续。" >&2; exit 1; }
 
 parse_memory() {
