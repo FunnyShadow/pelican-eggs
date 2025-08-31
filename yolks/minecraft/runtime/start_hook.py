@@ -110,21 +110,22 @@ def patch_yaml_file(file_path: str, rules: Dict):
 
 def patch_properties_file(file_path: str, rules: Dict):
     log(f"  -> Parsing Properties file: {file_path}")
-    lines = []
+    props = {}
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf8") as f:
-            lines = f.readlines()
-
-    props = {}
-    for line in lines:
-        stripped_line = line.strip()
-        if stripped_line and not stripped_line.startswith("#") and "=" in stripped_line:
-            key, value = stripped_line.split("=", 1)
-            props[key.strip()] = value.strip()
+            for line in f:
+                stripped_line = line.strip()
+                if (
+                    stripped_line
+                    and not stripped_line.startswith("#")
+                    and "=" in stripped_line
+                ):
+                    key, value = stripped_line.split("=", 1)
+                    props[key.strip()] = value.strip()
 
     for key, value in rules.items():
         final_value = expand_variables(value)
-        log(f"     - Setting '{key}' -> '{final_value}'")
+        log(f"     - Setting '{key}' -> '{str(final_value)}'")
         props[key] = str(final_value)
 
     with open(file_path, "w", encoding="utf8") as f:
@@ -136,17 +137,38 @@ def patch_generic_file(file_path: str, rules: Dict):
     log(f"  -> Parsing Generic file: {file_path}")
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            lines = f.readlines()
     except FileNotFoundError:
-        content = ""
+        log(
+            f"     File '{file_path}' not found. It will be created with specified values."
+        )
+        lines = []
 
-    for key, value in rules.items():
-        final_value = str(expand_variables(value))
-        log(f"     - Replacing '{key}' -> '{final_value}'")
-        content = content.replace(str(key), final_value)
+    new_lines = []
+    keys_to_patch = set(rules.keys())
+    patched_keys = set()
+
+    for line in lines:
+        stripped_line = line.strip()
+        matched = False
+        for key in keys_to_patch:
+            if stripped_line.startswith(key):
+                final_value = str(expand_variables(rules[key]))
+                log(f"     - Replacing line starting with '{key}' -> '{final_value}'")
+                new_lines.append(final_value + "\n")
+                patched_keys.add(key)
+                matched = True
+                break
+        if not matched:
+            new_lines.append(line)
+
+    for key in keys_to_patch - patched_keys:
+        final_value = str(expand_variables(rules[key]))
+        log(f"     - Appending missing key '{key}' -> '{final_value}'")
+        new_lines.append(final_value + "\n")
 
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write(content)
+        f.writelines(new_lines)
 
 
 def main():
