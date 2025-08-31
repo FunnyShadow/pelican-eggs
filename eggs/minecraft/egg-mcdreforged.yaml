@@ -134,8 +134,10 @@ scripts:
       echo "下一步操作:"
       echo "1. 将你的服务端核心文件上传到 'server' 目录"
       echo "2. 前往 'Startup' 页面，仔细检查所有变量设置"
+      echo "3. 点击 'Start' 按钮启动服务器，系统将在首次启动时自动完成所有初始化"
+      echo ""
       if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
-          echo "3. [重要] 你选择了 forge_handler, 请务必编辑 'forge_versions.txt' 文件！"
+          echo "[重要] 你选择了 forge_handler, 请务必编辑 'forge_versions.txt' 文件！"
       fi
       echo "4. 点击 'Start' 按钮启动服务器，系统将在首次启动时自动完成所有初始化"
       echo "-----------------------------------------"
