@@ -1,7 +1,7 @@
 ARG JAVA_VERSION=21
 ARG MCDR_VERSION=latest
 
-FROM mcdreforged/mcdreforged-temurin:${MCDR_VERSION}-slim-jdk${JAVA_VERSION}-extra
+FROM mcdreforged/mcdreforged-zulu:${MCDR_VERSION}-slim-jdk${JAVA_VERSION}-extra
 
 RUN set -eux; \
     apt-get update -y; \
