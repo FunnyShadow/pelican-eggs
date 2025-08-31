@@ -15,6 +15,7 @@ docker_images:
   "Java 8": "bluefunny/pelican-yolks:mcdr-8-latest"
 file_denylist:
   - config.yml
+  - .mcdr_installed
 startup: "python3 -m mcdreforged"
 config:
   files: "{}"
