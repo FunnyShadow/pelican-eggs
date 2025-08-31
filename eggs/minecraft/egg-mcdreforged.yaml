@@ -2,10 +2,8 @@ _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL"
 meta:
   version: PLCN_v2
   update_url: null
-exported_at: "2025-08-31T06:26:28+00:00"
 name: MCDReforged
 author: no-reply@bluefunny.email
-uuid: 6f320fef-0570-4011-971f-4abd0c08434c
 description: "一个简洁高效且兼容性极强的 MCDReforged 运行环境"
 tags: {}
 features:
