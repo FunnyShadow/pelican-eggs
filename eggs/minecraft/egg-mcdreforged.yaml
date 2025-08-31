@@ -215,11 +215,11 @@ variables:
       MCDReforged RCON 功能使用的端口 / 请确保这个端口没有被占用, 并且在 "Network"
       标签页中分配了该端口
     env_variable: MCDR_RCON_PORT
-    default_value: ""
+    default_value: "25568"
     user_viewable: true
     user_editable: true
     rules:
-      - nullable
+      - required
       - numeric
       - "between:1024,65535"
   - sort: 10
