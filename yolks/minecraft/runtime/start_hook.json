@@ -24,7 +24,7 @@
           "rcon.enable": "{{MCDR_RCON_ENABLED}}",
           "rcon.port": "{{MCDR_RCON_PORT}}",
           "rcon.password": "{{MCDR_RCON_PASSWORD}}",
-          "start_command": "{{MCDR_START_COMMAND}}"
+          "start_command": "DYNAMICALLY_GENERATED_BY_START_HOOK"
         }
       },
       "server/config.yml": {

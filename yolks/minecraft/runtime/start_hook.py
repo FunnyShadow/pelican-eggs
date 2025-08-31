@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import os
 import re
+import shlex
 import shutil
 import json
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from ruamel.yaml import YAML
 
@@ -18,10 +19,39 @@ def log(s: str):
         print(f"[StartHook] {s}", flush=True)
 
 
+def build_start_command_list() -> List[str]:
+    parts = []
+    for part_env in [
+        "MCDR_CMD_PART_EXEC",
+        "MCDR_CMD_PART_JVM",
+        "MCDR_CMD_PART_MAIN",
+        "MCDR_CMD_PART_ARGS",
+    ]:
+        part_val = os.getenv(part_env)
+        if part_val:
+            parts.extend(shlex.split(part_val))
+    if not parts:
+        log("Warning: Failed to build start command list from environment variables.")
+    log(f"Built start command list: {parts}")
+    return parts
+
+
 class ConfigurationPatcher:
     def __init__(self, config_path: str):
         with open(config_path, "r", encoding="utf8") as f:
             self.config = json.load(f)
+
+    def _to_native_type(self, value: str) -> Any:
+        if not isinstance(value, str):
+            return value
+        val_lower = value.lower()
+        if val_lower == "true":
+            return True
+        if val_lower == "false":
+            return False
+        if val_lower.isdigit():
+            return int(val_lower)
+        return value
 
     def _read_yaml(self, file_path: str) -> Dict:
         with open(file_path, "r", encoding="utf8") as f:
@@ -41,7 +71,8 @@ class ConfigurationPatcher:
                 var_name = match.group(1)
                 return os.getenv(var_name, f"{{{{_UNDEFINED_{var_name}}}}}")
 
-            return re.sub(r"\{\{([a-zA-Z0-9_]+)\}\}", repl, value)
+            expanded_value = re.sub(r"\{\{([a-zA-Z0-9_]+)\}\}", repl, value)
+            return self._to_native_type(expanded_value)
         elif isinstance(value, dict):
             return {k: self._expand_variables(v) for k, v in value.items()}
         elif isinstance(value, list):
@@ -101,7 +132,12 @@ class ConfigurationPatcher:
             data = {}
 
         for match, replace_with in rules.items():
-            final_value = self._expand_variables(replace_with)
+            final_value = None
+            if replace_with == "DYNAMICALLY_GENERATED_BY_START_HOOK":
+                final_value = build_start_command_list()
+            else:
+                final_value = self._expand_variables(replace_with)
+
             log(f"     - Setting '{match}' -> '{str(final_value)[:100]}'")
             if ".*." in match:
                 prefix, suffix = match.split(".*.")
@@ -236,9 +272,9 @@ def move_minecraft_eula():
             return
 
     try:
-        working_directory = (
-            YAML().load(open(MCDR_CONFIG_FILE)).get("working_directory", "server")
-        )
+        with open(MCDR_CONFIG_FILE, "r", encoding="utf8") as f:
+            mcdr_config_data = YAML().load(f)
+        working_directory = mcdr_config_data.get("working_directory", "server")
         dest_path = os.path.join(working_directory, eula_file)
         if os.path.isdir(working_directory) and not os.path.exists(dest_path):
             log(f"Moving '{eula_file}' to '{dest_path}'")
