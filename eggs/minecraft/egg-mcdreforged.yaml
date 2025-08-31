@@ -18,7 +18,7 @@ file_denylist:
   - .mcdr_installed
 startup: "python3 -m mcdreforged"
 config:
-  files: "{}"
+  files: '{"files":{"server.properties":{"parser":"properties","find":{"server-ip":"0.0.0.0","server-port":"{{server.build.default.port}}","query.port":"{{server.build.default.port}}"}}}}'
   startup:
     done: ")! For help, type"
   logs: "{}"
