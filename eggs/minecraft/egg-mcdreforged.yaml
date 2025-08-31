@@ -49,25 +49,22 @@ scripts:
       欢迎使用 BlueFunny 的服务器面板! 
 
       # 注意
-      为了保证服务器的正常运行，我们已禁止您修改位于服务器根目录的 `config.yml` 文件
-      此文件中大部分常用配置均可通过面板的 "Startup" 页面进行管理，如您需要修改一些非常用配置，请联系 BlueFunny
+      为了保证服务器的正常运行, 我们已禁止您修改位于服务器根目录的 'config.yml' 文件
+      此文件中大部分常用配置均可通过面板的 "Startup" 页面上的环境变量进行管理, 如您需要修改一些非常用配置, 请联系 BlueFunny
 
-      # 如何配置服务器？
-      前往 "Startup" (启动) 标签页，您会找到所有可配置的选项，包括：
-      -   服务端核心文件名
-      -   MCDR 处理器类型
-      -   MCDR 语言
-      -   MCDR RCON 功能 (启用、端口、密码)
-      -   高级 PIP 参数
-      -   ...以及其他所有高级选项
+      # 如何配置服务器?
+      1. 前往 'server/' 目录上传你的服务端文件
+      2. 使用 "Startup" 页面的各种环境变量调整好你的 MCDReforged 配置
+      3. 使用 "Console" 页面的 "Start" 按钮启动服务器
+      4. 使用 "Console" 页面的 "Address" 标签栏的值作为服务器的 IP 地址
 
       # 故障排查
-      1.  **检查 "Startup" 变量**: 确保所有设置，特别是 `SERVER_JARFILE` 和 `MCDR_HANDLER` 是正确的
-      2.  **检查 `server/` 目录**: 确保您的服务端文件已完整上传
-      3.  **[Forge 用户] 检查 `forge_versions.txt`**: 确保版本号填写无误
-      4.  **查看控制台日志**: 启动时发生的任何错误都会在此显示
+      1.  检查 "Startup" 页面上的环境变量: 确保所有设置, 特别是 `SERVER_JARFILE` 和 `MCDR_HANDLER` 是正确的
+      2.  检查 `server/` 目录: 确保您的服务端文件已完整上传
+      3.  [(Neo)Forge 用户] 检查 'forge_versions.txt': 确保版本号填写无误
+      4.  查看控制台日志: 启动时发生的任何错误都会在此显示
 
-      如果问题无法解决，请尝试使用 "Settings" -> "Reinstall Server" 功能重装
+      如果问题无法解决, 请尝试使用 "Settings" -> "Reinstall Server" 功能来重装服务器 (数据会被备份到当前文件夹下的 'old' 目录中)
       EOF
 
       echo "正在创建 JVM 参数文件 (args.txt)..."
@@ -108,18 +105,15 @@ scripts:
       fi
 
       mkdir -p server
-      python3 -m mcdreforged init
 
       echo "-----------------------------------------"
       echo "基础环境配置完成！"
       echo ""
-      echo "下一步操作:"
-      echo "1. 将你的服务端核心文件上传到 'server' 目录"
-      echo "2. 前往 'Startup' 页面，仔细检查所有变量设置"
-      echo "3. 点击 'Start' 按钮启动服务器，系统将在首次启动时自动完成所有初始化"
+      echo "接下来, 请阅读在根目录自动生成的 'readme.txt' 文件"
+      echo "然后跟随其中的指引配置好服务器即可开启属于你自己的新天地!"
       echo ""
       if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
-          echo "[重要] 你选择了 forge_handler, 请务必编辑 'forge_versions.txt' 文件！"
+          echo "[重要] 检测到你选择了 'forge_handler', 请务必编辑 'forge_versions.txt' 文件! 否则服务器将无法正常启动!"
       fi
       echo "-----------------------------------------"
 
