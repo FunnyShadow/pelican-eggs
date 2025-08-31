@@ -2,9 +2,9 @@ _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL"
 meta:
   version: PLCN_v2
   update_url: null
-name: MCDReforged
+name: MCDReforged-Velocity
 author: no-reply@bluefunny.email
-description: "一个简洁高效且兼容性极强的 MCDReforged 运行环境"
+description: "一个简洁高效且兼容性极强的 MCDReforged 运行环境 (Velocity 专版)"
 tags: "{}"
 features:
   - eula
@@ -19,7 +19,7 @@ startup: "python3 -m mcdreforged"
 config:
   files: "{}"
   startup:
-    done: ")! For help, type"
+    done: "Done ("
   logs: "{}"
   stop: stop
 scripts:
@@ -46,6 +46,9 @@ scripts:
       cat <<'EOF' > readme.txt
       欢迎使用 BlueFunny 的服务器面板!
 
+      检测到您使用了 Velocity 专用模板, 此模板仅用于启动 Velocity 服务端及其衍生服务端, 无法启动其他服务端!
+      如果您是不小心选择了此模板, 请尝试联系 BlueFunny
+
       # 注意
       为了保证服务器的正常运行, 我们已禁止您修改位于服务器根目录的 'config.yml' 文件
       此文件中大部分常用配置均可通过面板的 "Startup" 页面上的环境变量进行管理, 如您需要修改一些非常用配置, 请联系 BlueFunny
@@ -60,7 +63,7 @@ scripts:
       1.  检查 "Startup" 页面上的环境变量: 确保所有设置, 特别是 `SERVER_JARFILE` 和 `MCDR_HANDLER` 是正确的
       2.  检查 `server/` 目录: 确保您的服务端文件已完整上传
       3.  查看控制台日志: 启动时发生的任何错误都会在此显示
-      4.  [(Neo)Forge 用户] 检查 'forge_versions.txt': 确保版本号填写无误
+      4.  [Velocity 用户] 确认服务端: 确保使用了 Velocity 或基于 Velocity 的服务端
 
       如果问题无法解决, 请尝试使用 "Settings" -> "Reinstall Server" 功能来重装服务器 (数据会被备份到当前文件夹下的 'old' 目录中)
       EOF
@@ -89,19 +92,6 @@ scripts:
       -XX:MaxTenuringThreshold=1
       EOF
 
-      if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
-          echo "检测到 forge_handler, 正在创建 (Neo)Forge 版本文件 (forge_versions.txt)..."
-          cat <<EOF > forge_versions.txt
-      # 请在此处填写你的 Minecraft 版本和 (Neo)Forge 版本号
-      # 请不要包含 "<" 或 ">" 符号, 示例:
-      # MC_VERSION=1.20.1
-      # FORGE_VERSION=47.2.0
-
-      MC_VERSION=<你的 MC 版本>
-      FORGE_VERSION=<你的 (Neo)Forge 版本>
-      EOF
-      fi
-
       mkdir -p server
 
       echo "-----------------------------------------"
@@ -110,9 +100,9 @@ scripts:
       echo "接下来, 请阅读在根目录自动生成的 'readme.txt' 文件"
       echo "然后跟随其中的指引配置好服务器即可开启属于你自己的新天地!"
       echo ""
-      if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
-          echo "[重要] 检测到你选择了 'forge_handler', 请务必编辑 'forge_versions.txt' 文件! 否则服务器将无法正常启动!"
-      fi
+      echo "[重要] 检测到你选择了 Velocity 专用模板"
+      echo "此模板仅用于启动 Velocity 服务端, 无法启动其他服务端!"
+      echo "(可启动的服务端包含基于此类服务端进行修改的服务端)"
       echo "-----------------------------------------"
 
       exit 0
@@ -140,16 +130,16 @@ variables:
       - required
       - string
   - sort: 3
-    name: "MCDR 处理器类型"
-    description: "MCDReforged 解析服务端日志时采用的处理器类型"
+    name: "MCDR 处理器类型 (只读)"
+    description: "MCDReforged 解析服务端日志时采用的处理器类型 (特殊模板, 仅限查看)"
     env_variable: MCDR_HANDLER
-    default_value: vanilla_handler
+    default_value: velocity_handler
     user_viewable: true
-    user_editable: true
+    user_editable: false
     rules:
       - required
       - string
-      - "in:vanilla_handler,bukkit_handler,bukkit14_handler,forge_handler,cat_server_handler,arclight_handler,beta18_handler"
+      - "in:velocity_handler"
   - sort: 4
     name: "MCDR 语言"
     description: |-
