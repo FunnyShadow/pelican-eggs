@@ -2,7 +2,7 @@ _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL"
 meta:
   version: PLCN_v2
   update_url: null
-exported_at: "2025-08-31T06:05:39+00:00"
+exported_at: "2025-08-31T06:26:28+00:00"
 name: MCDReforged
 author: no-reply@bluefunny.email
 uuid: 6f320fef-0570-4011-971f-4abd0c08434c
@@ -52,30 +52,12 @@ scripts:
       为了保证服务器的正常运行，我们已禁止您修改位于服务器根目录的 `config.yml` 文件
       此文件中大部分常用配置均可通过面板的 "Startup" 页面进行管理，如您需要修改一些非常用配置，请联系 BlueFunny
 
-      # 用户可编辑文件
-      - `server/`:
-        你的 Minecraft 服务端文件存放目录，请将核心文件 (如 paper.jar, forge-installer.jar) 上传至此
-
-      - `args.txt`:
-        通用的 JVM 启动参数文件，可在此添加或修改 Aikar's Flags 等高级 JVM 参数
-
-      - `forge_versions.txt`:
-        **[仅 Forge/NeoForge 需要]** 如果您使用 `forge_handler`，必须在此文件中填写正确的 Minecraft 和 Forge/NeoForge 版本号
-
-      # 自动生成文件
-      以下文件和目录会在服务器首次成功启动后由系统自动创建和管理，您通常无需关心：
-      - `config.yml`
-      - `permission.yml`
-      - `plugins/`
-      - `config/`
-      - `logs/`
-
       # 如何配置服务器？
       前往 "Startup" (启动) 标签页，您会找到所有可配置的选项，包括：
-      -   服务端核心文件名 (`SERVER_JARFILE`)
-      -   MCDR 处理器类型 (`MCDR_HANDLER`)
-      -   语言 (`MCDR_LANGUAGE`)
-      -   RCON 功能 (启用、端口、密码)
+      -   服务端核心文件名
+      -   MCDR 处理器类型
+      -   MCDR 语言
+      -   MCDR RCON 功能 (启用、端口、密码)
       -   高级 PIP 参数
       -   ...以及其他所有高级选项
 
