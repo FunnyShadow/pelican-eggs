@@ -126,6 +126,7 @@ scripts:
       fi
 
       mkdir -p server
+      python3 -m mcdreforged init
 
       echo "-----------------------------------------"
       echo "基础环境配置完成！"
