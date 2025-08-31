@@ -10,6 +10,7 @@ echo "Java version: $(java -version 2>&1 | awk -F '\"' '/version/ {print $2}')"
 echo "Python version: $(python3 -V)"
 echo "------------------------"
 
+python3 -m mcdreforged init
 python3 /start_hook.py
 
 cd server || { echo "错误: 'server' 目录创建或进入失败, 无法继续。" >&2; exit 1; }
