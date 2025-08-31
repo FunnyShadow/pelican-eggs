@@ -206,6 +206,7 @@ variables:
     user_editable: true
     rules:
       - required
+      - string
       - "in:true,false"
   - sort: 9
     name: "[高级] MCDR RCON 端口"
