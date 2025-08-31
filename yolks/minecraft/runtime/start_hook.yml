@@ -2,7 +2,6 @@ install:
   config.yml:
     check_update: false
     advanced_console: false
-    permission_file: permissions.yml
 
 pre_start:
   config.yml:
