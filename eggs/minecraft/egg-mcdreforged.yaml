@@ -19,7 +19,7 @@ startup: "python3 -m mcdreforged"
 config:
   files: "{}"
   startup:
-    done: "Starting the server with command"
+    done: ")! For help, type"
   logs: "{}"
   stop: stop
 scripts:
