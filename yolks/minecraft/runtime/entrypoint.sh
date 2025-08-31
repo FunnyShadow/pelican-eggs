@@ -17,7 +17,6 @@ error_exit() {
     exit 1
 }
 
-
 initialize_mcdr_if_needed() {
     if [ ! -f "${MCDR_INSTALL_MARK_FILE}" ]; then
         log "检测到首次启动, 正在初始化 MCDReforged..."
@@ -27,9 +26,7 @@ initialize_mcdr_if_needed() {
     fi
 }
 
-generate_server_command_parts() {
-    unset MCDR_CMD_PART_EXEC MCDR_CMD_PART_JVM MCDR_CMD_PART_MAIN MCDR_CMD_PART_ARGS
-
+generate_server_command() {
     local mem_val=${JAVA_MEMORY:-1024M}
     mem_val=$(echo "${mem_val}" | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')
 
@@ -43,8 +40,9 @@ generate_server_command_parts() {
         memory_flag="-Xmx1024M"
     fi
 
+    local cmd_string=""
     if [[ "${MCDR_HANDLER}" == "forge_handler" ]]; then
-        log "检测到 Forge Handler, 正在生成 Forge/NeoForge 启动参数..."
+        log "检测到 Forge Handler, 正在生成 Forge/NeoForge 启动命令..."
         if [ ! -f "../forge_versions.txt" ]; then error_exit "未找到 forge_versions.txt 文件"; fi
         source ../forge_versions.txt
 
@@ -57,27 +55,20 @@ generate_server_command_parts() {
         if [ ! -f "${args_file}" ]; then
             error_exit "未找到 unix_args.txt 文件, 请确认版本号正确且服务端已完整安装"
         fi
-
         log "使用参数文件: ${args_file}"
-        export MCDR_CMD_PART_EXEC="java"
-        export MCDR_CMD_PART_JVM="@${args_file}"
-        export MCDR_CMD_PART_ARGS="--nogui"
+        cmd_string="java @${args_file} --nogui"
     else
-        log "使用标准模式启动..."
+        log "使用标准模式生成启动命令..."
         if [ -z "${SERVER_JARFILE:-}" ]; then error_exit "环境变量 SERVER_JARFILE 未设置"; fi
-        
-        export MCDR_CMD_PART_EXEC="java"
-        export MCDR_CMD_PART_MAIN="-jar ${SERVER_JARFILE}"
 
         if [[ "${MCDR_HANDLER}" == "velocity_handler" || "${MCDR_HANDLER}" == "bungeecord_handler" || "${MCDR_HANDLER}" == "waterfall_handler" ]]; then
-            export MCDR_CMD_PART_JVM="-Xms128M ${memory_flag}"
-            export MCDR_CMD_PART_ARGS=""
+            cmd_string="java -Xms128M ${memory_flag} -jar ${SERVER_JARFILE}"
         else
-            export MCDR_CMD_PART_JVM="${memory_flag} @../args.txt"
-            export MCDR_CMD_PART_ARGS="--nogui"
+            cmd_string="java ${memory_flag} @../args.txt -jar ${SERVER_JARFILE} --nogui"
         fi
     fi
-    log "服务端命令参数已生成"
+    export MCDR_START_COMMAND="${cmd_string}"
+    log "服务端启动命令已生成: ${MCDR_START_COMMAND}"
 }
 
 main() {
@@ -91,18 +82,15 @@ main() {
     initialize_mcdr_if_needed
 
     cd server || error_exit "'server' 目录创建或进入失败, 无法继续"
-    generate_server_command_parts
+    generate_server_command
     
     cd "${WORKING_DIR}"
     
     log "执行 Python 启动挂钩以应用配置..."
     python3 /start_hook.py
 
-    local startup_cmd
-    startup_cmd=$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')
-    
-    log "执行启动命令: ${startup_cmd}"
-    eval "${startup_cmd}"
+    log "启动 MCDReforged..."
+    exec python3 -m mcdreforged start
 }
 
 main

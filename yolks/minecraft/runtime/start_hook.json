@@ -7,19 +7,15 @@
         "advanced_console": false,
         "working_directory": "server",
         "language": "{{MCDR_LANGUAGE}}",
+        "handler": "{{MCDR_HANDLER}}",
+        "start_command": "{{MCDR_START_COMMAND}}",
         "write_server_output_to_log_file": "{{MCDR_LOG_SERVER_OUTPUT}}",
         "encoding": "{{MCDR_ENCODING}}",
         "decoding": "{{MCDR_DECODING}}",
         "plugin_pip_install_extra_args": "{{PIP_ARGS}}",
         "rcon.enable": "{{MCDR_RCON_ENABLED}}",
         "rcon.port": "{{MCDR_RCON_PORT}}",
-        "rcon.password": "{{MCDR_RCON_PASSWORD}}",
-        "start_command": [
-          "{{MCDR_CMD_PART_EXEC}}",
-          "{{MCDR_CMD_PART_JVM}}",
-          "{{MCDR_CMD_PART_MAIN}}",
-          "{{MCDR_CMD_PART_ARGS}}"
-        ]
+        "rcon.password": "{{MCDR_RCON_PASSWORD}}"
       }
     },
     "server/server.properties": {

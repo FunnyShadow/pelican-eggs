@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import re
-import shlex
 import json
 from typing import Dict, Any
 
@@ -42,15 +41,7 @@ def expand_variables(value: Any) -> Any:
 
         def repl(match):
             placeholder = match.group(1).strip()
-            env_var_name = None
-
-            if placeholder in VARIABLE_MAPPING:
-                env_var_name = VARIABLE_MAPPING[placeholder]
-            elif placeholder.startswith("env."):
-                env_var_name = placeholder[4:]
-            else:
-                env_var_name = placeholder
-
+            env_var_name = VARIABLE_MAPPING.get(placeholder) or placeholder
             env_val = os.getenv(env_var_name)
             return env_val if env_val is not None else match.group(0)
 
@@ -72,15 +63,13 @@ def set_nested_value(data: Dict, path: str, value: Any):
         if match:
             key_name, index = match.groups()
             index = int(index)
-            if key_name not in current_level or not isinstance(
-                current_level.get(key_name), list
-            ):
+            if not isinstance(current_level.get(key_name), list):
                 current_level[key_name] = []
             while len(current_level[key_name]) <= index:
                 current_level[key_name].append({})
             current_level = current_level[key_name][index]
         else:
-            if key not in current_level or not isinstance(current_level.get(key), dict):
+            if not isinstance(current_level.get(key), dict):
                 current_level[key] = {}
             current_level = current_level[key]
 
@@ -89,9 +78,7 @@ def set_nested_value(data: Dict, path: str, value: Any):
     if match:
         key_name, index = match.groups()
         index = int(index)
-        if key_name not in current_level or not isinstance(
-            current_level.get(key_name), list
-        ):
+        if not isinstance(current_level.get(key_name), list):
             current_level[key_name] = []
         while len(current_level[key_name]) <= index:
             current_level[key_name].append(None)
@@ -138,48 +125,58 @@ def patch_properties_file(file_path: str, rules: Dict):
     for key, value in rules.items():
         final_value = expand_variables(value)
         log(f"     - Setting '{key}' -> '{final_value}'")
-        props[key] = final_value
+        props[key] = str(final_value)
 
     with open(file_path, "w", encoding="utf8") as f:
         for key, value in props.items():
             f.write(f"{key}={value}\n")
 
 
+def patch_generic_file(file_path: str, rules: Dict):
+    log(f"  -> Parsing Generic file: {file_path}")
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        content = ""
+
+    for key, value in rules.items():
+        final_value = str(expand_variables(value))
+        log(f"     - Replacing '{key}' -> '{final_value}'")
+        content = content.replace(str(key), final_value)
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
 def main():
     if not os.path.samefile(os.getcwd(), WORKING_DIR):
-        raise SystemExit(
-            f"Error: Working directory {os.getcwd()} does not match expected {WORKING_DIR}"
-        )
+        os.chdir(WORKING_DIR)
 
     with open(CONFIG_FILE, "r", encoding="utf8") as f:
         config = json.load(f)
 
-    files_to_patch = config.get("files", {})
-    if not files_to_patch:
-        log("No files to patch found in configuration.")
-        return
-
-    for file_path, instructions in files_to_patch.items():
+    for file_path, instructions in config.get("files", {}).items():
         parser_type = instructions.get("parser")
         find_rules = instructions.get("find", {})
-
         if not parser_type or not find_rules:
             continue
 
-        dir_name = os.path.dirname(file_path)
+        full_path = os.path.join(WORKING_DIR, file_path)
+        dir_name = os.path.dirname(full_path)
         if dir_name:
             os.makedirs(dir_name, exist_ok=True)
 
-        log(f"Processing file: {file_path} (using parser: {parser_type})")
+        log(f"Processing file: {full_path} (using parser: {parser_type})")
 
         if parser_type in ["yaml", "yml"]:
-            patch_yaml_file(file_path, find_rules)
+            patch_yaml_file(full_path, find_rules)
         elif parser_type == "properties":
-            patch_properties_file(file_path, find_rules)
+            patch_properties_file(full_path, find_rules)
+        elif parser_type == "file":
+            patch_generic_file(full_path, find_rules)
         else:
-            log(
-                f"Warning: Parser type '{parser_type}' is not supported, skipping file '{file_path}'"
-            )
+            log(f"Warning: Parser '{parser_type}' is not supported, skipping.")
 
     log("File patching completed successfully.")
 
