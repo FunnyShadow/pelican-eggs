@@ -10,11 +10,12 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
+COPY ./entrypoint.sh ./start_hook.py ./start_hook.yml /
+RUN chmod +x /entrypoint.sh
+
 USER container
 ENV USER=container HOME=/home/container
 
 WORKDIR /home/container
-COPY ./entrypoint.sh ./start_hook.py ./start_hook.yml /
-RUN chmod +x /entrypoint.sh
 
 CMD ["/bin/bash", "/entrypoint.sh"]
