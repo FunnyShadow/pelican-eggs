@@ -61,13 +61,13 @@ def build_start_command_list() -> List[str]:
 
 
 def apply_modifications(phase: str, config: Dict):
-    log(f"Applying file modifications for phase '{phase}'")
+    log(f"正在应用阶段 '{phase}' 的文件修改")
     for file_path, patch in config.get(phase, {}).items():
         if not os.path.isfile(file_path):
-            log(f"Skipping file '{file_path}' as it does not exist")
+            log(f"文件 '{file_path}' 不存在, 跳过")
             continue
 
-        log(f"Modifying file '{file_path}'")
+        log(f"正在修改文件 '{file_path}'")
         data = read_yaml(file_path)
         modified = False
 
@@ -89,22 +89,20 @@ def apply_modifications(phase: str, config: Dict):
 
             last_key = keys[-1]
             if last_key not in current_level or current_level[last_key] != final_value:
-                log(
-                    f"  - Setting '{key}': {current_level.get(last_key)} -> {final_value}"
-                )
+                log(f"  - 设置 '{key}': {current_level.get(last_key)} -> {final_value}")
                 current_level[last_key] = final_value
                 modified = True
 
         if modified:
             write_yaml(data, file_path)
-            log(f"File '{file_path}' has been updated.")
+            log(f"文件 '{file_path}' 已更新")
         else:
-            log(f"No changes made to file '{file_path}'.")
+            log(f"文件 '{file_path}' 未作任何更改")
 
 
 def handle_first_launch():
     if not os.path.exists(INSTALLATION_MARK_FILE):
-        log("First launch detected. Initializing MCDReforged environment...")
+        log("检测到首次启动, 正在初始化 MCDReforged 环境...")
         subprocess.run("python3 -m mcdreforged init", shell=True, check=True)
         with open(INSTALLATION_MARK_FILE, "w") as f:
             f.write("installed")
@@ -122,21 +120,19 @@ def move_minecraft_eula():
     working_directory = read_yaml(MCDR_CONFIG_FILE).get("working_directory", "server")
     dest_path = os.path.join(working_directory, eula_file)
     if os.path.isdir(working_directory):
-        log(f"Moving '{eula_file}' to '{dest_path}'")
+        log(f"正在移动 '{eula_file}' 到 '{dest_path}'")
         shutil.move(eula_file, dest_path)
 
 
 def main():
     if not os.path.samefile(os.getcwd(), WORKING_DIR):
-        raise SystemExit(
-            f"Error: Unexpected working dir {os.getcwd()}, should be {WORKING_DIR}"
-        )
+        raise SystemExit(f"错误: 工作目录 {os.getcwd()} 与预期的 {WORKING_DIR} 不符")
     config = read_yaml(CONFIG_FILE)
     if handle_first_launch():
         apply_modifications("install", config)
     apply_modifications("pre_start", config)
     move_minecraft_eula()
-    log("Start hook finished.")
+    log("启动挂钩执行完毕")
 
 
 if __name__ == "__main__":
