@@ -2,7 +2,6 @@
 import os
 import shlex
 import shutil
-import subprocess
 from typing import Dict, Any, List
 
 from ruamel.yaml import YAML
@@ -100,12 +99,9 @@ def apply_modifications(phase: str, config: Dict):
             log(f"文件 '{file_path}' 未作任何更改")
 
 
-def handle_first_launch():
+def is_first_launch() -> bool:
     if not os.path.exists(INSTALLATION_MARK_FILE):
-        log("检测到首次启动, 正在初始化 MCDReforged 环境...")
-        subprocess.run("python3 -m mcdreforged init", shell=True, check=True)
-        with open(INSTALLATION_MARK_FILE, "w") as f:
-            f.write("installed")
+        log("检测到首次启动, 将应用 install 配置")
         return True
     return False
 
@@ -128,8 +124,9 @@ def main():
     if not os.path.samefile(os.getcwd(), WORKING_DIR):
         raise SystemExit(f"错误: 工作目录 {os.getcwd()} 与预期的 {WORKING_DIR} 不符")
     config = read_yaml(CONFIG_FILE)
-    if handle_first_launch():
+    if is_first_launch():
         apply_modifications("install", config)
+
     apply_modifications("pre_start", config)
     move_minecraft_eula()
     log("启动挂钩执行完毕")
