@@ -10,7 +10,7 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
 
-COPY ./entrypoint.sh ./start_hook.py ./start_hook.yml /
+COPY ./entrypoint.sh ./start_hook.py ./start_hook.json /
 RUN chmod +x /entrypoint.sh
 
 USER container
@@ -18,4 +18,4 @@ ENV USER=container HOME=/home/container
 
 WORKDIR /home/container
 
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/bin/bash", "/entrypoint.sh"]Fix File Mismatch Issues
