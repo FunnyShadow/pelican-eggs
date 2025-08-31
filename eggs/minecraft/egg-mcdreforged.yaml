@@ -241,3 +241,13 @@ variables:
     rules:
       - nullable
       - string
+  - sort: 12
+    name: "[调试] MCDR START HOOK 日志"
+    description: "使镜像的 START HOOK 功能输出 DEBUG 级别日志"
+    env_variable: DEBUG_START_HOOK
+    default_value: "false"
+    user_viewable: false
+    user_editable: false
+    rules:
+      - nullable
+      - "in:true,false"
