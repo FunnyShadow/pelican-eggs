@@ -53,7 +53,10 @@ generate_server_command() {
         if [ ! -f "${args_file}" ]; then args_file="libraries/net/neoforged/neoforge/${MC_VERSION}-${FORGE_VERSION}/unix_args.txt"; fi
         if [ ! -f "${args_file}" ]; then error_exit "未找到 'unix_args.txt' 文件, 请确认版本号正确且服务端已完整安装"; fi
         log "使用参数文件: ${args_file}"
-        cmd_string="java @${args_file} --nogui"
+
+        local jvm_args="${memory_flag}"
+        local server_args="--nogui"
+        cmd_string="java ${jvm_args} @../args.txt @${args_file} ${server_args}"
     else
         log "使用标准模式生成启动命令..."
         if [ -z "${SERVER_JARFILE:-}" ]; then error_exit "环境变量 SERVER_JARFILE 未设置"; fi
@@ -61,14 +64,11 @@ generate_server_command() {
         local jvm_args="${memory_flag}"
         local server_args=""
 
-        if [[ "${MCDR_HANDLER}" == "velocity_handler" || "${MCDR_HANDLER}" == "bungeecord_handler" || "${MCDR_HANDLER}" == "waterfall_handler" ]]; then
-            jvm_args="-Xms128M ${jvm_args}"
-        else
+        if [[ ! "${MCDR_HANDLER}" == "velocity_handler" && ! "${MCDR_HANDLER}" == "bungeecord_handler" && ! "${MCDR_HANDLER}" == "waterfall_handler" ]]; then
             server_args="--nogui"
         fi
         
         cmd_string="java ${jvm_args} @../args.txt -jar ${SERVER_JARFILE} ${server_args}"
-        # 清理多余的空格
         cmd_string=$(echo "${cmd_string}" | tr -s ' ')
     fi
     export MCDR_START_COMMAND="${cmd_string}"
